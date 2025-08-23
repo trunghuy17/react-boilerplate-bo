@@ -24,50 +24,50 @@ const Login = React.lazy(() => import('./pages/login'));
 
 function App() {
 
+  const routeConfig = [
+    {
+      path: PATH.ROOT,
+      component: Dashboard,
+      guard: AuthRoutes,
+      layout: Template1
+    },
+    {
+      path: PATH.LOGIN,
+      component: Login,
+      guard: GuestRoutes,
+    },
+    {
+      path: PATH.REGISTER,
+      component: Register,
+      guard: GuestRoutes
+    },
+    {
+      path: PATH.ABOUT,
+      component: About,
+    },
+  ]
   return (
     <>
       <React.Suspense fallback={<Spinner />}>
         <Routes>
-          <Route 
-            path={PATH.ROOT}
-            element={
-              <AuthRoutes>
-                <Template1>
-                  <Dashboard />
-                </Template1>
-              </AuthRoutes>
-            } 
-          />
-          <Route 
-            path={PATH.LOGIN} 
-            element={
-              <GuestRoutes>
-                <Login />
-              </GuestRoutes>
-            } 
-          />
-          <Route 
-            path={PATH.REGISTER}
-            element={
-              <GuestRoutes>
-                <Register />
-              </GuestRoutes>
-            } 
-          />
-          <Route 
-            path={PATH.REGISTER}
-            element={
-              <GuestRoutes>
-                <Register />
-              </GuestRoutes>
-            } 
-          />
-          <Route 
-            path={PATH.ABOUT}
-            element={
-              <About />
-            } 
-          />
+          {routeConfig.map(route => {
+            const Guard = route?.guard || React.Fragment;
+            const Layout = route?.layout || React.Fragment;
+            const Component = route.component;
+            return (
+              <Route 
+                key={route.path}
+                path={route.path}
+                element={
+                  <Guard>
+                    <Layout>
+                      <Component />
+                    </Layout>
+                  </Guard>
+                } 
+              />
+            )
+          })}
           <Route path={PATH.NOT_FOUND} element={<NotFound />} />
         </Routes>
       </React.Suspense>
