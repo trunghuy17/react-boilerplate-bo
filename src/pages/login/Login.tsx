@@ -10,6 +10,7 @@ import Label from "../../components/atoms/field/LabelField";
 import Input from "../../components/atoms/field/InputField";
 import ThemeButtonTwo from "../../components/atoms/button/ThemeButtonTwo";
 import Button from "../../components/atoms/button/Button";
+import { httpRequest } from "../../initRequest";
 
 
 
@@ -20,9 +21,29 @@ function Login() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     
-    const access_token = 'tony';
-    window.localStorage.setItem('access_token', access_token);
-    navigate(PATH.ROOT)
+    try {
+      const bodyData = {
+        "data": {
+          "email": "hoanghai@gmail.com",
+          "password": "123456"
+        }
+      }
+      const res = await httpRequest('/api/user/signin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        data: bodyData
+      })
+      console.log("Login success: ", res)
+      const { access_token, refresh_token } = res?.data || {};
+      window.localStorage.setItem('access_token', access_token);
+      window.localStorage.setItem('refresh_token', refresh_token);
+      navigate(PATH.ROOT)
+    } catch (err) {
+      console.error('Login fail: ',err)
+    }
+   
   }
   
   return (
